@@ -31,7 +31,7 @@ class classProducts
     public function search()
     {   //ojo
         $query_search = 'SELECT cat.name  AS categorie_name, pro.id, pro.title, pro.text, pro.creation_date, pro.categorie_id 
-        FROM '. $this->db_table  .'pro LEFT JOIN categories cat ON pro.categorie_id = cat.id ORDER BY pro.creation_date DESC';
+        FROM '. $this->db_table  .' pro LEFT JOIN categories cat ON pro.categorie_id = cat.id ORDER BY pro.creation_date DESC';
         $stmt_search = $this->conn->query($query_search);
         $stmt_search->execute();
         $table_result_search = $stmt_search->fetchAll(PDO::FETCH_OBJ);
@@ -42,18 +42,22 @@ class classProducts
     public function search_one()
     {   //ojo
         $query_search = 'SELECT cat.name  AS categorie_name, pro.id, pro.title, pro.text, pro.creation_date, pro.categorie_id 
-        FROM '. $this->db_table  .'pro LEFT JOIN categories cat ON pro.categorie_id = cat.id WHERE pro.id = :id LIMIT 0,1';
-        $stmt_search = $this->conn->query($query_search);
-        $stmt_search->bindParam(':id', $this->id, PDO::PARAM_INT);
+        FROM '. $this->db_table  .' pro LEFT JOIN categories cat ON pro.categorie_id = cat.id WHERE pro.id = ?';
+        
+        
+        $stmt_search = $this->conn->prepare($query_search);
+        $stmt_search->bindParam(1, $this->id);
         $stmt_search->execute();
-        $table_result_search = $stmt_search->fetchAll(PDO::FETCH_OBJ);
+        $table_result_search = $stmt_search->fetch(PDO::FETCH_ASSOC);
 
-        $this->id = $table_result_search->id;
-        $this->title = $table_result_search->title;
-        $this->text = $table_result_search->text;
-        $this->creation_date = $table_result_search->creation_date;
-        $this->categorie_name = $table_result_search->categorie_name;
-        $this->categorie_id = $table_result_search->categorie_id;
+        $this->id = htmlspecialchars(strip_tags($this->id));
+
+        $this->id = $table_result_search['id'];
+        $this->title = $table_result_search['title'];
+        $this->text = $table_result_search['text'];
+        $this->creation_date = $table_result_search['creation_date'];
+        $this->categorie_name = $table_result_search['categorie_name'];
+        $this->categorie_id = $table_result_search['categorie_id'];
     }
 
     //query para insertan a base de datos 
@@ -68,13 +72,14 @@ class classProducts
         $this->text = htmlspecialchars(strip_tags($this->text));
         $this->categorie_id = htmlspecialchars(strip_tags($this->categorie_id));
         
+        
         //Vincular el parametro que viene del input 
         $stmt_insert->bindParam(':title', $this->title, PDO::PARAM_STR);
-        $stmt_insert->bindParam(':text', $this->text, PDO::PARAM_STR);
-        $stmt_insert->bindParam(':categorie_id', $this->categorie_id, PDO::PARAM_INT);
+        $stmt_insert->bindParam(':text', $this->text);
+        $stmt_insert->bindParam(':categorie_id', $this->categorie_id);
 
         //Si se escucja la queri insertar y devolver  un true 
-        if ($stmt_insert->excute()) {
+        if ($stmt_insert->execute()) {
             return true;
         } else {
             //preguntas a GIAN
@@ -101,7 +106,7 @@ class classProducts
         $stmt_update->bindParam(':categorie_id', $this->categorie_id, PDO::PARAM_INT);
 
         //Si se escucja la queri updatear y devolver  un true 
-        if ($stmt_update->excute()) {
+        if ($stmt_update->execute()) {
             return true;
         } else {
             //preguntas a GIAN
@@ -113,7 +118,7 @@ class classProducts
     //METODO DELETE BORRAR CATEGORIA
     public function delete()
     {   //ojo
-        $query_delete = 'DELETE FROM ' . $this->db_table . 'WHERE id = :id';
+        $query_delete = 'DELETE FROM ' . $this->db_table . ' WHERE id = :id';
         $stmt_delete = $this->conn->prepare($query_delete);
 
         //validacion de input con dato
@@ -124,7 +129,7 @@ class classProducts
 
 
         //Si se escucja la queri deletear y devolver   true 
-        if ($stmt_delete->excute()) {
+        if ($stmt_delete->execute()) {
             return true;
         } else {
             //preguntas a GIAN

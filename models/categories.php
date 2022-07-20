@@ -94,17 +94,17 @@ class classCategories
         $this->name = htmlspecialchars(strip_tags($this->name));
 
         //Vincular el parametro que viene del input 
-        $stmt_update->bindParam(':id', $this->id, PDO::PARAM_INT);
+        $stmt_update->bindParam(':id', $this->id);
         $stmt_update->bindParam(':name', $this->name, PDO::PARAM_STR);
 
         //Si se escucja la queri updatear y devolver  un true 
-        if ($stmt_update->excute()) 
+        if ($stmt_update->execute()) 
         {
             return true;
         }else
         {
             //preguntas a GIAN
-            printf("Error %s.\n", $stmt_update->error); 
+            //printf("Error %s.\n", $stmt_update->error); 
             return false;
         }
     }
@@ -112,7 +112,7 @@ class classCategories
     //METODO DELETE BORRAR CATEGORIA
     public function delete()
     {   //ojo
-        $query_delete = 'DELETE FROM ' .$this->db_table. 'WHERE id = :id';
+        $query_delete = 'DELETE FROM ' .$this->db_table. ' WHERE id = :id';
         $stmt_delete = $this->conn->prepare($query_delete);
         
         //validacion de input con dato
@@ -123,7 +123,7 @@ class classCategories
         
 
         //Si se escucja la queri deletear y devolver  un true 
-        if ($stmt_delete->excute()) 
+        if ($stmt_delete->execute()) 
         {
             return true;
         }else

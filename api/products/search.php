@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 //incluir conexion a la base de datos 
 include_once '../../config/connection_mysql.php';
-include_once '../../models/categories.php';
+include_once '../../models/products.php';
 /* 
 //instanciamos clase, que contiene la base de datos y conexion 
 
@@ -65,9 +65,9 @@ $db = $classConnection_mysql->connect();
 
 //se instancia el primer objeto de la clase de metodos que se encuentran en categorias (search)
 
-$classCategories = new classCategories($db);
+$products = new classProducts($db);
 
-$result = $classCategories->search();
+$result = $products->search();
 
 //var_dump($result);
 
@@ -76,15 +76,15 @@ if (!empty($result))
     //array de categoria
     
 
-    $categorie_arr['data'] = $result;
+    $products_arr['data'] = $result;
     
  
      #enviar el formato de envio 
-     echo json_encode($categorie_arr);
+     echo json_encode($products_arr);
      
 }else {
     //envio de error 
-    print_r (json_encode(array('message' => "No hay categorias")));
+    print_r (json_encode(array('message' => "No hay productos")));
 } 
 ?>
  
